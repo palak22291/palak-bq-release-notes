@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigQuery Release Pulse - Live Updates & Release Notes</title>
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="Stay updated with the latest Google BigQuery release notes. Search, filter, and share updates on X/Twitter instantly.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons for clean modern icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Background grid decoration -->
+    <div class="bg-grid-glow"></div>
+    <div class="bg-radial-glow"></div>
+
+    <div class="app-container">
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="header-main">
+                <div class="brand-group">
+                    <div class="logo-wrapper">
+                        <i data-lucide="database" class="logo-icon"></i>
+                    </div>
+                    <div>
+                        <h1>BigQuery <span class="gradient-text">Release Pulse</span></h1>
+                        <p class="subtitle">Real-time features, deprecations, and issue tracking for Google BigQuery</p>
+                    </div>
+                </div>
+                
+                <div class="action-group">
+                    <button id="btn-refresh" class="btn btn-primary btn-glow" title="Refresh Release Notes">
+                        <i data-lucide="rotate-cw" id="icon-refresh"></i>
+                        <span>Refresh</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Dashboard Banner -->
+            <div class="stats-banner">
+                <div class="stat-card" id="stat-all">
+                    <div class="stat-info">
+                        <span class="stat-label">Total Updates</span>
+                        <span class="stat-value" id="val-all">-</span>
+                    </div>
+                    <div class="stat-icon-wrapper theme-all">
+                        <i data-lucide="layers"></i>
+                    </div>
+                </div>
+                <div class="stat-card" id="stat-features">
+                    <div class="stat-info">
+                        <span class="stat-label">Features</span>
+                        <span class="stat-value" id="val-features">-</span>
+                    </div>
+                    <div class="stat-icon-wrapper theme-feature">
+                        <i data-lucide="sparkles"></i>
+                    </div>
+                </div>
+                <div class="stat-card" id="stat-issues">
+                    <div class="stat-info">
+                        <span class="stat-label">Issues</span>
+                        <span class="stat-value" id="val-issues">-</span>
+                    </div>
+                    <div class="stat-icon-wrapper theme-issue">
+                        <i data-lucide="alert-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-card" id="stat-others">
+                    <div class="stat-info">
+                        <span class="stat-label">Others</span>
+                        <span class="stat-value" id="val-others">-</span>
+                    </div>
+                    <div class="stat-icon-wrapper theme-other">
+                        <i data-lucide="info"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search, Filter & Main Content Area -->
+        <main class="app-content">
+            <!-- Filter Sidebar / Bar -->
+            <section class="controls-section glass-panel">
+                <div class="search-box">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="search-input" placeholder="Search updates, keywords, standard SQL functions..." autocomplete="off">
+                </div>
+
+                <div class="filter-group">
+                    <label class="control-label">Filter by type</label>
+                    <div class="filter-chips">
+                        <button class="chip active" data-filter="all">All Updates</button>
+                        <button class="chip" data-filter="feature">Features</button>
+                        <button class="chip" data-filter="issue">Issues</button>
+                        <button class="chip" data-filter="deprecation">Deprecations</button>
+                        <button class="chip" data-filter="other">Others</button>
+                    </div>
+                </div>
+
+                <div class="sort-group">
+                    <label class="control-label" for="sort-select">Sort Order</label>
+                    <div class="select-wrapper">
+                        <select id="sort-select">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="select-arrow"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cards Container -->
+            <section class="releases-section">
+                <!-- Status & Feedback Area -->
+                <div class="release-status-info">
+                    <span id="results-count">Showing all updates</span>
+                    <span id="data-source-badge" class="source-badge">Cached</span>
+                </div>
+
+                <!-- Main Release List -->
+                <div id="releases-list" class="releases-list">
+                    <!-- Skeleton loaders inserted here dynamically when loading -->
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>BigQuery Release Pulse &bull; Created with Flask, Vanilla JS &amp; Glassmorphism CSS</p>
+            <p class="secondary">Data sourced directly from the official Google Cloud Feed</p>
+        </footer>
+    </div>
+
+    <!-- Twitter/X Share Modal -->
+    <div id="tweet-modal" class="modal-backdrop hidden">
+        <div class="modal-container glass-panel">
+            <div class="modal-header">
+                <h3><i data-lucide="twitter" class="modal-title-icon"></i> Share Update on X</h3>
+                <button id="modal-close" class="modal-close-btn" aria-label="Close modal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Original content preview -->
+                <div class="original-preview">
+                    <span class="preview-label">Selected Update</span>
+                    <div id="modal-preview-text" class="preview-box"></div>
+                </div>
+
+                <!-- Tweet customizers -->
+                <div class="preset-selectors">
+                    <span class="section-label">Choose a Format</span>
+                    <div class="preset-buttons">
+                        <button class="btn btn-secondary preset-btn active" data-preset="standard">Standard</button>
+                        <button class="btn btn-secondary preset-btn" data-preset="minimal">Minimal</button>
+                        <button class="btn btn-secondary preset-btn" data-preset="alert">Alert style</button>
+                    </div>
+                </div>
+
+                <!-- Tweet Textarea -->
+                <div class="tweet-editor">
+                    <label for="tweet-textarea" class="section-label">Edit Tweet Text</label>
+                    <textarea id="tweet-textarea" rows="4" maxlength="280" placeholder="What's happening?"></textarea>
+                    
+                    <div class="editor-footer">
+                        <span id="char-counter">0 / 280</span>
+                        <div class="progress-bar-container">
+                            <div id="char-progress" class="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
+                <button id="modal-submit" class="btn btn-primary btn-tweet">
+                    <i data-lucide="twitter"></i>
+                    <span>Tweet Now</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
